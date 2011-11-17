@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin id="neiland.neiland.mango.plugins.riaApps" name="RiaApps" version="1.0" provider-name="Neiland.net" class="riaApps.Handler">
+   <description><![CDATA[ RiaApps is a plugin to get and display a list of projects from the riaforge website]]></description>
+   <requiresVersion match="greaterOrEqual">1.3</requiresVersion>
+   <listens>
+      <event name="getPods" type="synch" priority="5" />
+   </listens>
+   <listensAdmin>
+  	<event name="getPodsList" type="synch" priority="1" />
+	<event name="settingsNav" type="synch" priority="5" />
+  	<event name="showRiaAppsSettings" type="synch" priority="5" />
+  </listensAdmin>
+</plugin>
