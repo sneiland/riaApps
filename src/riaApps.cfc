@@ -7,7 +7,7 @@
 			steven.neiland@gmail.com
 			http://www.neiland.net
 	
-	Version: 1.0.1
+	Version: 1.0.2
 	
 	Description:
 		This cfc creates a cached array of projects from the riaforge website which can then be displayed on your site/blog
@@ -18,6 +18,7 @@
 	Update:
 		22-sept-2011 : Fixed arrayAppend error in update
 		22-sept-2011 : Fixed bug where recent mode ignored displayNum property
+		24-Dec-2011 : Altered cflocks to fail silently on timeout
 		
  --->
 
@@ -65,6 +66,8 @@
 	
 	
 	<!--- GETTERS / SETTERS --->
+	
+	
 	<cffunction name="setStartIndex" access="public" output="false" returnType="void">
 		<cfargument name="startIndex" required="true" type="numeric">
 		<cfset variables.startIndex = arguments.startIndex />
@@ -134,7 +137,7 @@
 				
 		<!--- If timeout has been passed create a lock on the update code --->
 		<cfif dateCompare(now(),dateAdd("n",variables.reloadTime,variables.lastUpdate),"n") GTE 0>
-			<cflock type="exclusive" name="lockTimedUpdate" timeout="10" throwontimeout="true">
+			<cflock type="exclusive" name="lockTimedUpdate" timeout="10" throwontimeout="false">
 				<!--- If the timeout has still been exceeded when this code is reached ie not been updated by a previous lock then update --->
 				<cfif dateCompare(now(),dateAdd("n",variables.reloadTime,variables.lastUpdate),"n") GTE 0>
 					<cfset update() />
@@ -147,7 +150,7 @@
 	<cffunction name="update" access="public" output="false" returnType="void" 
 			hint="Loads the next set of projects from the appropriate source(s)">
 				
-		<cflock type="exclusive" name="lockUpdate" timeout="10" throwontimeout="true">
+		<cflock type="exclusive" name="lockUpdate" timeout="10" throwontimeout="false">
 			<cfswitch expression="#variables.mode#">
 				<cfcase value="recent">
 					<!--- Recent: just pull projects from the recent rss feed --->
@@ -173,7 +176,7 @@
 		<cfset var appArray = arrayNew(1)>
 		<cfset var content = "">
 				
-		<cflock type="readOnly" name="lockGetAppsList" timeout="10" throwontimeout="true">
+		<cflock type="readOnly" name="lockGetAppsList" timeout="10" throwontimeout="false">
 			<cfset appArray = getProjectArray()>
 			<cfset content = buildHTMLList(appArray)>
 		</cflock>	
@@ -186,7 +189,7 @@
 		<cfset var appArray = arrayNew(1)>
 		<cfset var content = "">
 		
-		<cflock type="readOnly" name="lockRecentAppsList" timeout="10" throwontimeout="true">
+		<cflock type="readOnly" name="lockRecentAppsList" timeout="10" throwontimeout="false">
 			<cfset appArray = getRecentArray()>
 			<cfset content = buildHTMLList(appArray)>
 		</cflock>
